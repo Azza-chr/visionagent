@@ -52,3 +52,24 @@
 - Per-person crops: helmet/cap correct (1/1), but vest: always "yes" with invented colors (brown, yellow) -> yes-bias; cannot verify absence
 - Decision: YOLO produces safety events; VLM only describes the scene (labeled AI-generated)
 - Prompt lesson: placeholders like "..." get copied into the answer
+
+## CLIP + Qdrant search (31 frames, 1 per second, CLIP ViT-B/32)
+- Plain CLIP search (crop or pad): weak. Chair/phone queries return only `test` frames, no `test2` frame, similarity scores almost flat (0.286 to 0.277)
+- Padding vs center-crop: no clear gain (phone query: 2 test2 frames appear with pad, scores 0.191-0.194)
+- Negation ("worker without a helmet"): CLIP alone returns 2/5 frames with a real head; with YOLO filter head>0 it returns 5/5 (by construction)
+- Takeaway: hybrid search (detector facts as filters + embeddings for meaning) beats embeddings alone
+- Next: tiles, to see if zooming recovers small objects
+
+
+## CLIP ViT-B/32 + Qdrant search results (31 frames)
+- Scene-level query ("workers near scaffolding"): high scores (0.31-0.32), plausible results
+- Detail/action queries ("sitting on a chair", "talking on the phone"): flat low scores (0.22-0.29), results not clearly relevant, unchanged by padding or tiling
+- Negation ("without a helmet"): CLIP alone 2/5; with YOLO filter head>0: 5/5
+- Conclusion: use CLIP for scene semantics, YOLO facts as filters (hybrid search); stronger model (SigLIP) as future work
+
+
+## Search diagnostic
+- "a yellow metal container" -> 5/5 test2 frames; "stacked grey concrete blocks" -> 5/5 test2
+- CLIP ViT-B/32 retrieves scene/object content reliably, but not actions or fine details (sitting, phone)
+- Padding and tiling did not fix action queries; hypothesis "small objects" not supported
+- Best design: hybrid search (YOLO facts as filters + CLIP for scene semantics)

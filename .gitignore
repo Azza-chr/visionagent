@@ -5,3 +5,5 @@ data/
 *.mp4
 *.avi
 *.db
+results/qdrant_db/
+results/frames_all/
