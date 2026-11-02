@@ -39,3 +39,16 @@
 - Close workers: vest/helmet detected at 0.86-0.88 confidence
 - Distant workers (<~40 px tall): vests missed at imgsz=640, conf=0.4
 - Tested: conf 0.25 / imgsz 1280 / tiled inference -> [your findings]
+
+## Violation check (test2.mp4, 3840x2160)
+- Pipeline: 6 helmet tracks, 1 head track, compliance 86% (7 tracks: demo, not a statistic)
+- Manual check of the head track (t=3.9 s, 7.8 s long): TRUE POSITIVE, worker wears a cap, no helmet
+- Caveat: worker is seated near the work area, context decides if it is a real violation
+- Missed: small background workers (4K video resized to 640 px)
+
+## VLM experiments (Qwen2-VL-2B on 5 key frames)
+- Whole-scene JSON: miscounts workers (5 vs 7), invents violations (flags white helmet), loops (30+ repeated entries) when asked to list everyone
+- YOLO facts injected into the prompt: VLM inherits YOLO's errors (vest=0 -> "No PPE") and contradicts correct facts; invents hazards (electrocution, falls)
+- Per-person crops: helmet/cap correct (1/1), but vest: always "yes" with invented colors (brown, yellow) -> yes-bias; cannot verify absence
+- Decision: YOLO produces safety events; VLM only describes the scene (labeled AI-generated)
+- Prompt lesson: placeholders like "..." get copied into the answer
