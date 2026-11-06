@@ -2,6 +2,7 @@
 runs/
 data/
 *.pt
+!models/best.pt
 *.mp4
 *.avi
 *.db
