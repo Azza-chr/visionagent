@@ -107,7 +107,7 @@ Decision: the detector produces the safety events. A 2B vision-language model ca
 ### Semantic search: CLIP ViT-B/32 and Qdrant, 31 frames
 
 - Scene and object queries work: "a yellow metal container" and "stacked grey concrete blocks" each returned 5 of 5 frames from the right video.
-- SENTENCE_FROM_ABOVE
+- - Action and detail queries ("a worker sitting on a chair", "a person talking on the phone") returned flat, low similarity scores and mostly irrelevant, near-duplicate frames from the same moment of `test.mp4`; none of the `test2` frames showing a seated worker or a phone call were retrieved.
 - Negation fails: "a worker without a helmet" returned 2 of 5 frames with a bare head when using CLIP alone. Filtering on the detector fact `head > 0` returns 5 of 5, which is why the search is hybrid.
 
 ## Known limitations
