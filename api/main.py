@@ -19,7 +19,8 @@ ctx = {}
 async def lifespan(app: FastAPI):
     # Heavy objects are loaded once, at startup
     ctx["clip"] = SentenceTransformer("clip-ViT-B-32")
-    ctx["qdrant"] = QdrantClient(path="results/qdrant_db")
+    url = os.environ.get("QDRANT_URL")
+    ctx["qdrant"] = QdrantClient(url=url) if url else QdrantClient(path="results/qdrant_db")
     yield
     ctx["qdrant"].close()
 
@@ -90,7 +91,7 @@ def search(q: str, video: str | None = None, head_only: bool = False, limit: int
              "helmet": p.payload["helmet"],
              "head": p.payload["head"],
              "vest": p.payload["vest"],
-             "image_url": "/frames/" + os.path.basename(p.payload["path"])}
+             "image_url": "/frames/" + os.path.basename(p.payload["path"].replace("\\", "/"))}
             for p in res]
 
 

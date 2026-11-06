@@ -1,8 +1,12 @@
+import os
+
 import pandas as pd
 import requests
 import streamlit as st
 
-API = "http://127.0.0.1:8000"
+API = os.environ.get("API_URL", "http://127.0.0.1:8000")
+PUBLIC_API = os.environ.get("PUBLIC_API_URL", API)   # address your browser can reach
+
 st.set_page_config(page_title="VisionAgent", layout="wide")
 st.title("VisionAgent: construction site safety")
 
@@ -20,7 +24,7 @@ try:
     k = get(f"/kpis/{video}")
     ts = pd.DataFrame(get(f"/timeseries/{video}", window=window))
 except requests.exceptions.RequestException as e:
-    st.error("API not reachable. Start it with: uvicorn api.main:app --port 8000")
+    st.error("API not reachable. Is it running on port 8000?")
     st.caption(str(e))
     st.stop()
 
@@ -45,7 +49,7 @@ else:
     st.dataframe(pd.DataFrame(k["violations"]), hide_index=True)
     for v in k["violations"]:
         t = int(round((v["first_s"] + v["last_s"]) / 2))
-        st.image(f"{API}/frames/{video}_{t:03d}s.jpg", width=520,
+        st.image(f"{PUBLIC_API}/frames/{video}_{t:03d}s.jpg", width=520,
                  caption=f"Track {int(v['track_id'])}, evidence frame at {t}s")
 
 # --- Natural language search ---
@@ -58,7 +62,7 @@ if st.button("Search"):
         st.info("No result.")
     cols = st.columns(max(len(res), 1))
     for col, item in zip(cols, res):
-        col.image(API + item["image_url"],
+        col.image(PUBLIC_API + item["image_url"],
                   caption=f"{item['time_s']}s | score {item['score']}")
 
 # --- Report with human validation ---

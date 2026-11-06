@@ -1,0 +1,10 @@
+.venv
+.git
+data
+models
+runs
+results
+__pycache__
+*.mp4
+*.avi
+*.pt

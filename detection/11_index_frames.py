@@ -23,7 +23,8 @@ images = [prep(Image.open(p).convert("RGB")) for p in paths]
 vectors = clip.encode(images, batch_size=16, normalize_embeddings=True,
                       show_progress_bar=True)
 
-client = QdrantClient(path="results/qdrant_db")
+url = os.environ.get("QDRANT_URL")
+client = QdrantClient(url=url) if url else QdrantClient(path="results/qdrant_db")
 if client.collection_exists(COLLECTION):
     client.delete_collection(COLLECTION)
 client.create_collection(

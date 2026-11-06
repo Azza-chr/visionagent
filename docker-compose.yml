@@ -1,0 +1,37 @@
+services:
+  qdrant:
+    image: qdrant/qdrant:latest
+    ports:
+      - "6333:6333"
+    volumes:
+      - qdrant_data:/qdrant/storage
+
+  api:
+    build:
+      context: .
+      dockerfile: Dockerfile.api
+    environment:
+      QDRANT_URL: http://qdrant:6333
+    volumes:
+      - ./results:/app/results
+      - hf_cache:/root/.cache/huggingface
+    ports:
+      - "8000:8000"
+    depends_on:
+      - qdrant
+
+  dashboard:
+    build:
+      context: .
+      dockerfile: Dockerfile.dashboard
+    environment:
+      API_URL: http://api:8000
+      PUBLIC_API_URL: http://localhost:8000
+    ports:
+      - "8501:8501"
+    depends_on:
+      - api
+
+volumes:
+  qdrant_data:
+  hf_cache:
