@@ -1,0 +1,11 @@
+ultralytics
+opencv-python
+supervision
+pandas
+sentence-transformers
+qdrant-client
+langgraph
+fastapi
+uvicorn
+streamlit
+requests
